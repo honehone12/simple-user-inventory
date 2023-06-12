@@ -4,7 +4,7 @@ import "gorm.io/gorm"
 
 type Jewel struct {
 	gorm.Model
-	UserID uint //`gorm:"unique"`
+	UserID uint `gorm:"unique"`
 
 	Red    uint64 `gorm:"not null"`
 	Blue   uint64 `gorm:"not null"`

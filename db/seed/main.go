@@ -7,8 +7,7 @@ import (
 )
 
 func main() {
-	err := godotenv.Load("../../.env")
-	if err != nil {
+	if err := godotenv.Load("../../.env"); err != nil {
 		panic(err)
 	}
 
@@ -17,8 +16,7 @@ func main() {
 		panic(err)
 	}
 
-	err = conn.User().Seed()
-	if err != nil {
+	if err = conn.User().Seed(); err != nil {
 		panic(err)
 	}
 }

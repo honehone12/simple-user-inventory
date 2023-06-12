@@ -44,10 +44,7 @@ func (c *UserController) Seed() error {
 	result := c.db.Create([]*models.User{
 		alice, bob, charlie, dave, eve, fergie,
 	})
-	if result.Error != nil {
-		return result.Error
-	}
-	return nil
+	return result.Error
 }
 
 func (c *UserController) Create(
@@ -61,10 +58,7 @@ func (c *UserController) Create(
 	}
 
 	result := c.db.Create(user)
-	if result.Error != nil {
-		return result.Error
-	}
-	return nil
+	return result.Error
 }
 
 func (c *UserController) Read(email string) (*models.User, error) {
@@ -72,7 +66,7 @@ func (c *UserController) Read(email string) (*models.User, error) {
 	result := c.db.Select(
 		"ID", "CreatedAt", "UpdatedAt",
 		"Name", "Email",
-	).Where(&models.User{Email: email}).Take(user)
+	).Where("email = ?", email).Take(user)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -81,7 +75,7 @@ func (c *UserController) Read(email string) (*models.User, error) {
 
 func (c *UserController) ReadId(email string) (uint, error) {
 	user := &models.User{}
-	result := c.db.Select("ID").Where(&models.User{Email: email}).Take(user)
+	result := c.db.Select("ID").Where("email = ?", email).Take(user)
 	// gorm does not have zero id
 	if result.Error != nil {
 		return 0, result.Error
@@ -101,10 +95,7 @@ func (c *UserController) Update(
 		Name:  name,
 		Email: email,
 	})
-	if result.Error != nil {
-		return result.Error
-	}
-	return nil
+	return result.Error
 }
 
 func (c *UserController) UpdatePassword(id uint, password string) error {
@@ -120,8 +111,5 @@ func (c *UserController) UpdatePassword(id uint, password string) error {
 		Salt:         hashed.Salt,
 		PasswordHash: hashed.DK,
 	})
-	if result.Error != nil {
-		return result.Error
-	}
-	return nil
+	return result.Error
 }

@@ -12,11 +12,15 @@ import (
 )
 
 type DbConnection struct {
-	user *controller.UserController
+	db *gorm.DB
 }
 
 func (conn *DbConnection) User() *controller.UserController {
-	return conn.user
+	return controller.NewUserController(conn.db)
+}
+
+func (conn *DbConnection) Balance() *controller.BalanceController {
+	return controller.NewBalanceController(conn.db)
 }
 
 func NewConnection() (*DbConnection, error) {
@@ -35,7 +39,7 @@ func NewConnection() (*DbConnection, error) {
 	}
 
 	return &DbConnection{
-		user: controller.NewUserController(db),
+		db: db,
 	}, nil
 }
 

@@ -7,31 +7,28 @@ import (
 	"github.com/joho/godotenv"
 )
 
-func setupTest() {
-	err := godotenv.Load("../../.env")
-	if err != nil {
+func setupEnv() {
+	if err := godotenv.Load("../../.env"); err != nil {
 		panic(err)
 	}
 }
 
 func TestCreate(t *testing.T) {
-	setupTest()
+	setupEnv()
 	conn, err := db.NewConnection()
 	if err != nil {
 		t.Fatal(err)
 	}
-	err = conn.User().Create(
+	if err = conn.User().Create(
 		"Ginji",
 		"ginji@user.moe",
 		"ginjikyunmoemoe",
-	)
-	if err != nil {
+	); err != nil {
 		t.Fatal(err)
 	}
 }
 
 func TestRead(t *testing.T) {
-	setupTest()
 	conn, err := db.NewConnection()
 	if err != nil {
 		t.Fatal(err)
@@ -47,7 +44,6 @@ func TestRead(t *testing.T) {
 }
 
 func TestReadId(t *testing.T) {
-	setupTest()
 	conn, err := db.NewConnection()
 	if err != nil {
 		t.Fatal(err)
@@ -62,14 +58,12 @@ func TestReadId(t *testing.T) {
 }
 
 func TestUpdate(t *testing.T) {
-	setupTest()
 	conn, err := db.NewConnection()
 	if err != nil {
 		t.Fatal(err)
 	}
 	// Ginji's id is 1
-	err = conn.User().Update(1, "Ginjiro", "ginjiro@user.moe")
-	if err != nil {
+	if err = conn.User().Update(1, "Ginjiro", "ginjiro@user.moe"); err != nil {
 		t.Fatal(err)
 	}
 	user, err := conn.User().Read("ginjiro@user.moe")
@@ -83,14 +77,12 @@ func TestUpdate(t *testing.T) {
 }
 
 func TestUpdatePassword(t *testing.T) {
-	setupTest()
 	conn, err := db.NewConnection()
 	if err != nil {
 		t.Fatal(err)
 	}
 	// Ginji's id is 1
-	err = conn.User().UpdatePassword(1, "ginjikyunkyunmoe")
-	if err != nil {
+	if err = conn.User().UpdatePassword(1, "ginjikyunkyunmoe"); err != nil {
 		t.Fatal(err)
 	}
 }
