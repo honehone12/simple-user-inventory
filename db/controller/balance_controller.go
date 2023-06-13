@@ -12,11 +12,11 @@ type BalanceController struct {
 	db *gorm.DB
 }
 
-func NewBalanceController(db *gorm.DB) *BalanceController {
-	return &BalanceController{db}
+func NewBalanceController(db *gorm.DB) BalanceController {
+	return BalanceController{db}
 }
 
-func (c *BalanceController) Coin(id uint) (uint64, error) {
+func (c BalanceController) Coin(id uint) (uint64, error) {
 	balance := &models.Balance{}
 	result := c.db.Select("Coin").Where("user_id = ?", id).Take(balance)
 	if result.Error != nil {
@@ -25,7 +25,7 @@ func (c *BalanceController) Coin(id uint) (uint64, error) {
 	return balance.Coin, nil
 }
 
-func (c *BalanceController) Fund(id uint, value uint64) error {
+func (c BalanceController) Fund(id uint, value uint64) error {
 	return c.db.Transaction(func(tx *gorm.DB) error {
 		balance := &models.Balance{}
 		result := tx.Select("ID", "Coin").Where("user_id = ?", id).Take(balance)
@@ -41,7 +41,7 @@ func (c *BalanceController) Fund(id uint, value uint64) error {
 	})
 }
 
-func (c *BalanceController) Consume(id uint, value uint64) error {
+func (c BalanceController) Consume(id uint, value uint64) error {
 	return c.db.Transaction(func(tx *gorm.DB) error {
 		balance := &models.Balance{}
 		result := tx.Select("ID", "Coin").Where("user_id = ?", id).Take(balance)

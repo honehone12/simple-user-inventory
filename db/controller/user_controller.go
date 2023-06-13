@@ -11,11 +11,11 @@ type UserController struct {
 	db *gorm.DB
 }
 
-func NewUserController(db *gorm.DB) *UserController {
-	return &UserController{db}
+func NewUserController(db *gorm.DB) UserController {
+	return UserController{db}
 }
 
-func (c *UserController) Seed() error {
+func (c UserController) Seed() error {
 	alice, err := models.NewUser("Alice", "alice@user.moe", "alicekyunmoemoe")
 	if err != nil {
 		return err
@@ -47,7 +47,7 @@ func (c *UserController) Seed() error {
 	return result.Error
 }
 
-func (c *UserController) Create(
+func (c UserController) Create(
 	name string,
 	email string,
 	password string,
@@ -61,7 +61,7 @@ func (c *UserController) Create(
 	return result.Error
 }
 
-func (c *UserController) Read(email string) (*models.User, error) {
+func (c UserController) Read(email string) (*models.User, error) {
 	user := &models.User{}
 	result := c.db.Select(
 		"ID", "CreatedAt", "UpdatedAt",
@@ -73,7 +73,7 @@ func (c *UserController) Read(email string) (*models.User, error) {
 	return user, nil
 }
 
-func (c *UserController) ReadId(email string) (uint, error) {
+func (c UserController) ReadId(email string) (uint, error) {
 	user := &models.User{}
 	result := c.db.Select("ID").Where("email = ?", email).Take(user)
 	// gorm does not have zero id
@@ -83,7 +83,7 @@ func (c *UserController) ReadId(email string) (uint, error) {
 	return user.ID, nil
 }
 
-func (c *UserController) Update(
+func (c UserController) Update(
 	id uint,
 	name string,
 	email string,
@@ -98,7 +98,7 @@ func (c *UserController) Update(
 	return result.Error
 }
 
-func (c *UserController) UpdatePassword(id uint, password string) error {
+func (c UserController) UpdatePassword(id uint, password string) error {
 	hasher := utils.NewPasswordHasher(password)
 	hashed, err := hasher.Hash()
 	if err != nil {

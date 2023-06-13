@@ -15,11 +15,11 @@ type DbConnection struct {
 	db *gorm.DB
 }
 
-func (conn *DbConnection) User() *controller.UserController {
+func (conn *DbConnection) User() controller.UserController {
 	return controller.NewUserController(conn.db)
 }
 
-func (conn *DbConnection) Balance() *controller.BalanceController {
+func (conn *DbConnection) Balance() controller.BalanceController {
 	return controller.NewBalanceController(conn.db)
 }
 
