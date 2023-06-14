@@ -2,30 +2,12 @@ package test
 
 import (
 	"simple-user-inventory/db"
+	"simple-user-inventory/db/test/common"
 	"testing"
-
-	"github.com/joho/godotenv"
 )
 
-func setupUser() {
-	if err := godotenv.Load("../../.env"); err != nil {
-		panic(err)
-	}
-	conn, err := db.NewConnection()
-	if err != nil {
-		panic(err)
-	}
-	if err = conn.User().Create(
-		"Ginji",
-		"ginji@user.moe",
-		"ginjikyunmoemoe",
-	); err != nil {
-		panic(err)
-	}
-}
-
 func TestFund(t *testing.T) {
-	setupUser()
+	common.SetupUser()
 	conn, err := db.NewConnection()
 	if err != nil {
 		t.Fatal(err)
@@ -47,11 +29,11 @@ func TestCoin(t *testing.T) {
 		t.Fatal(err)
 	}
 	if coin != 1000 {
-		t.Fatal("balance is not 1000")
+		t.Fatalf("balance is not 1000 but, %d", coin)
 	}
 }
 
-func TestConsume(t *testing.T) {
+func TestConsumeCoin(t *testing.T) {
 	conn, err := db.NewConnection()
 	if err != nil {
 		t.Fatal(err)
@@ -66,6 +48,6 @@ func TestConsume(t *testing.T) {
 		t.Fatal(err)
 	}
 	if coin != 0 {
-		t.Fatal("balance is not 0")
+		t.Fatalf("balance is not 0, but %d", coin)
 	}
 }

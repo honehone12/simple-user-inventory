@@ -2,19 +2,12 @@ package test
 
 import (
 	"simple-user-inventory/db"
+	"simple-user-inventory/db/test/common"
 	"testing"
-
-	"github.com/joho/godotenv"
 )
 
-func setupEnv() {
-	if err := godotenv.Load("../../.env"); err != nil {
-		panic(err)
-	}
-}
-
 func TestCreate(t *testing.T) {
-	setupEnv()
+	common.SetupEnv()
 	conn, err := db.NewConnection()
 	if err != nil {
 		t.Fatal(err)

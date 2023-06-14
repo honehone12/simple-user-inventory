@@ -45,7 +45,7 @@ func (j *JewelData) Add(jewel *models.Jewel) (*models.Jewel, error) {
 	return &models.Jewel{
 		Red:    jewel.Red + j.Red,
 		Blue:   jewel.Blue + j.Blue,
-		Green:  jewel.Green + jewel.Green,
+		Green:  jewel.Green + j.Green,
 		Yellow: jewel.Yellow + j.Yellow,
 		Black:  jewel.Black + j.Black,
 	}, nil
