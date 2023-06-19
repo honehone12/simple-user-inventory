@@ -3,13 +3,13 @@ module simple-user-inventory
 go 1.20
 
 require (
+	github.com/labstack/echo/v4 v4.10.2
 	golang.org/x/crypto v0.9.0
 	gorm.io/driver/postgres v1.5.2
 	gorm.io/gorm v1.25.1
 )
 
 require (
-	github.com/labstack/echo/v4 v4.10.2 // indirect
 	github.com/labstack/gommon v0.4.0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.17 // indirect
