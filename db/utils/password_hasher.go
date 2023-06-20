@@ -9,7 +9,7 @@ import (
 const (
 	N            = 1 << 0xf
 	P            = 8
-	Q            = 1
+	Q            = 2
 	HashLength32 = 32
 )
 

@@ -5,17 +5,22 @@ import (
 	"os"
 	"simple-user-inventory/db"
 	"simple-user-inventory/server"
+	"simple-user-inventory/server/metadata"
 
 	"github.com/joho/godotenv"
 )
 
-type Service struct {
-	server.Server
-}
-
 func Run() {
 	if err := godotenv.Load(); err != nil {
 		log.Fatal(err)
+	}
+	name := os.Getenv("SERVICE_NAME")
+	if len(name) == 0 {
+		log.Fatal("env param SERVICE_NAME is empty")
+	}
+	ver := os.Getenv("VERSION")
+	if len(ver) == 0 {
+		log.Fatal("env param VERSION is empty")
 	}
 	at := os.Getenv("SERVER_LISTEN_AT")
 	if len(at) == 0 {
@@ -27,6 +32,8 @@ func Run() {
 		log.Fatal(err)
 	}
 
-	s := server.NewServer(conn)
-	s.Run(at)
+	server.Run(metadata.Metadata{
+		Name:    name,
+		Version: ver,
+	}, at, conn)
 }

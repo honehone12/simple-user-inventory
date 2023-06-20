@@ -2,6 +2,7 @@ package db
 
 import (
 	"errors"
+	"log"
 	"os"
 	"simple-user-inventory/db/controller"
 	"simple-user-inventory/db/models"
@@ -43,6 +44,8 @@ func NewConnection() (Connection, error) {
 	if err = conn.migrate(); err != nil {
 		return conn, err
 	}
+
+	log.Println("new database connection is done")
 	return conn, nil
 }
 

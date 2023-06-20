@@ -3,12 +3,14 @@ package models
 import (
 	"simple-user-inventory/db/utils"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type User struct {
 	gorm.Model
 	Name         string `gorm:"not null;size:256"`
+	Uuid         string `gorm:"not null;size:64"`
 	Email        string `gorm:"unique;not null;size:256"`
 	Salt         []byte `gorm:"not null;size:64"`
 	PasswordHash []byte `gorm:"not null;size:64"`
@@ -29,21 +31,15 @@ func NewUser(
 		return nil, err
 	}
 
+	uuid := uuid.NewString()
 	return &User{
 		Name:         name,
+		Uuid:         uuid,
 		Email:        email,
 		Salt:         hashed.Salt,
 		PasswordHash: hashed.DK,
 
-		Balance: &Balance{
-			Coin: 0,
-		},
-		Jewel: &Jewel{
-			Red:    0,
-			Blue:   0,
-			Green:  0,
-			Yellow: 0,
-			Black:  0,
-		},
+		Balance: &Balance{},
+		Jewel:   &Jewel{},
 	}, nil
 }
