@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"errors"
 	"net/http"
 	"simple-user-inventory/server/context"
 	"simple-user-inventory/server/quick"
@@ -21,8 +20,8 @@ type LoginForm struct {
 }
 
 func Register(c echo.Context) error {
-	formData := RegistrationForm{}
-	if err := quick.ProcessFormData(c, &formData); err != nil {
+	formData := &RegistrationForm{}
+	if err := quick.ProcessFormData(c, formData); err != nil {
 		c.Logger().Warn(err)
 		return quick.BadRequest()
 	}
@@ -41,11 +40,21 @@ func Register(c echo.Context) error {
 }
 
 func Login(c echo.Context) error {
-	formData := LoginForm{}
-	if err := quick.ProcessFormData(c, &formData); err != nil {
+	formData := &LoginForm{}
+	if err := quick.ProcessFormData(c, formData); err != nil {
 		c.Logger().Warn(err)
 		return quick.BadRequest()
 	}
 
-	return errors.New("not implemented")
+	ctrl := c.(*context.Context).User()
+	ok, err := ctrl.VerifyPassword(formData.Email, formData.Password)
+	if err != nil {
+		c.Logger().Error(err)
+		return quick.ServiceError()
+	}
+	if !ok {
+		return quick.BadRequest()
+	}
+
+	return c.NoContent(http.StatusOK)
 }

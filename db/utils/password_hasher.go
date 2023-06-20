@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"bytes"
 	"crypto/rand"
 
 	"golang.org/x/crypto/scrypt"
@@ -8,15 +9,15 @@ import (
 
 const (
 	N            = 1 << 0xf
-	P            = 16
-	Q            = 4
+	R            = 16
+	P            = 4
 	HashLength32 = 32
 )
 
 type PasswordHasher struct {
 	n          int
+	r          int
 	p          int
-	q          int
 	hashLength int
 	password   []byte
 }
@@ -29,24 +30,24 @@ type HashedPassword struct {
 func NewPasswordHasher(password string) *PasswordHasher {
 	return &PasswordHasher{
 		n:          N,
+		r:          R,
 		p:          P,
-		q:          Q,
 		hashLength: HashLength32,
 		password:   []byte(password),
 	}
 }
 
-func (ph *PasswordHasher) Hash() (*HashedPassword, error) {
+func (h *PasswordHasher) Hash() (*HashedPassword, error) {
 	salt := make([]byte, HashLength32)
 	if _, err := rand.Read(salt); err != nil {
 		return nil, err
 	}
 
 	dk, err := scrypt.Key(
-		ph.password,
+		h.password,
 		salt,
-		ph.n, ph.p, ph.q,
-		ph.hashLength,
+		h.n, h.r, h.p,
+		h.hashLength,
 	)
 	if err != nil {
 		return nil, err
@@ -56,4 +57,18 @@ func (ph *PasswordHasher) Hash() (*HashedPassword, error) {
 		Salt: salt,
 		DK:   dk,
 	}, nil
+}
+
+func (h *PasswordHasher) Verify(hash []byte, salt []byte) (bool, error) {
+	dk, err := scrypt.Key(
+		h.password,
+		salt,
+		h.n, h.r, h.p,
+		h.hashLength,
+	)
+	if err != nil {
+		return false, err
+	}
+
+	return bytes.Equal(hash, dk), nil
 }

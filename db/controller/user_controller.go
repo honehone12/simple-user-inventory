@@ -65,8 +65,20 @@ func (c UserController) Read(email string) (*models.User, error) {
 	user := &models.User{}
 	result := c.db.Select(
 		"ID", "CreatedAt", "UpdatedAt",
-		"Name", "Email",
+		"Name", "Uuid", "Email",
 	).Where("email = ?", email).Take(user)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return user, nil
+}
+
+func (c UserController) ReadByUuid(uuid string) (*models.User, error) {
+	user := &models.User{}
+	result := c.db.Select(
+		"ID", "CreatedAt", "UpdatedAt",
+		"Name", "Uuid", "Email",
+	).Where("uuid = ?", uuid).Take(user)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -81,6 +93,27 @@ func (c UserController) ReadId(email string) (uint, error) {
 		return 0, result.Error
 	}
 	return user.ID, nil
+}
+
+func (c UserController) UuidToId(uuid string) (uint, error) {
+	user := &models.User{}
+	result := c.db.Select("ID").Where("uuid = ?", uuid).Take(user)
+	// gorm does not have zero id
+	if result.Error != nil {
+		return 0, result.Error
+	}
+	return user.ID, nil
+}
+
+func (c UserController) VerifyPassword(email string, password string) (bool, error) {
+	user := &models.User{}
+	result := c.db.Select("PasswordHash", "Salt").Where("email = ?", email).Take(user)
+	if result.Error != nil {
+		return false, result.Error
+	}
+
+	hasher := utils.NewPasswordHasher(password)
+	return hasher.Verify(user.PasswordHash, user.Salt)
 }
 
 func (c UserController) Update(

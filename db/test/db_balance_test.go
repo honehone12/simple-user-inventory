@@ -8,23 +8,23 @@ import (
 
 func TestFund(t *testing.T) {
 	common.SetupUser()
-	conn, err := db.NewOrm()
+	orm, err := db.NewOrm()
 	if err != nil {
 		t.Fatal(err)
 	}
 	// Ginji's id is 1
-	if err = conn.Balance().Fund(1, 1000); err != nil {
+	if err = orm.Balance().Fund(1, 1000); err != nil {
 		t.Fatal(err)
 	}
 }
 
 func TestCoin(t *testing.T) {
-	conn, err := db.NewOrm()
+	orm, err := db.NewOrm()
 	if err != nil {
 		t.Fatal(err)
 	}
 	// Ginji's id is 1
-	coin, err := conn.Balance().Coin(1)
+	coin, err := orm.Balance().Coin(1)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -34,16 +34,16 @@ func TestCoin(t *testing.T) {
 }
 
 func TestConsumeCoin(t *testing.T) {
-	conn, err := db.NewOrm()
+	orm, err := db.NewOrm()
 	if err != nil {
 		t.Fatal(err)
 	}
 	// Ginji's id is 1
-	err = conn.Balance().Consume(1, 1000)
+	err = orm.Balance().Consume(1, 1000)
 	if err != nil {
 		t.Fatal(err)
 	}
-	coin, err := conn.Balance().Coin(1)
+	coin, err := orm.Balance().Coin(1)
 	if err != nil {
 		t.Fatal(err)
 	}

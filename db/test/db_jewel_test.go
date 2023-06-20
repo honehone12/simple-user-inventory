@@ -9,7 +9,7 @@ import (
 
 func TestGain(t *testing.T) {
 	common.SetupUser()
-	conn, err := db.NewOrm()
+	orm, err := db.NewOrm()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -21,18 +21,18 @@ func TestGain(t *testing.T) {
 		Yellow: 2,
 		Black:  1,
 	}
-	if err := conn.Jewel().Gain(1, &newJewel); err != nil {
+	if err := orm.Jewel().Gain(1, &newJewel); err != nil {
 		t.Fatal(err)
 	}
 }
 
 func TestJewels(t *testing.T) {
-	conn, err := db.NewOrm()
+	orm, err := db.NewOrm()
 	if err != nil {
 		t.Fatal(err)
 	}
 	// Ginji's id is 1
-	jewel, err := conn.Jewel().Jewels(1)
+	jewel, err := orm.Jewel().Jewels(1)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -55,12 +55,12 @@ func TestJewels(t *testing.T) {
 }
 
 func TestConsumeJewel(t *testing.T) {
-	conn, err := db.NewOrm()
+	orm, err := db.NewOrm()
 	if err != nil {
 		t.Fatal(err)
 	}
 	// Ginji's id is 1
-	if err := conn.Jewel().Consume(1, &controller.JewelData{
+	if err := orm.Jewel().Consume(1, &controller.JewelData{
 		Red:    5,
 		Blue:   4,
 		Green:  3,
@@ -70,7 +70,7 @@ func TestConsumeJewel(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	jewel, err := conn.Jewel().Jewels(1)
+	jewel, err := orm.Jewel().Jewels(1)
 	if err != nil {
 		t.Fatal(err)
 	}
