@@ -27,7 +27,7 @@ func Run() {
 		log.Fatal("env param SERVER_LISTEN_AT is empty")
 	}
 
-	conn, err := db.NewConnection()
+	orm, err := db.NewOrm()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -35,5 +35,5 @@ func Run() {
 	server.Run(metadata.Metadata{
 		Name:    name,
 		Version: ver,
-	}, at, conn)
+	}, at, orm)
 }

@@ -8,8 +8,8 @@ import (
 
 const (
 	N            = 1 << 0xf
-	P            = 8
-	Q            = 2
+	P            = 16
+	Q            = 4
 	HashLength32 = 32
 )
 

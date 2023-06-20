@@ -9,7 +9,7 @@ import (
 
 func TestGain(t *testing.T) {
 	common.SetupUser()
-	conn, err := db.NewConnection()
+	conn, err := db.NewOrm()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -27,7 +27,7 @@ func TestGain(t *testing.T) {
 }
 
 func TestJewels(t *testing.T) {
-	conn, err := db.NewConnection()
+	conn, err := db.NewOrm()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -55,7 +55,7 @@ func TestJewels(t *testing.T) {
 }
 
 func TestConsumeJewel(t *testing.T) {
-	conn, err := db.NewConnection()
+	conn, err := db.NewOrm()
 	if err != nil {
 		t.Fatal(err)
 	}

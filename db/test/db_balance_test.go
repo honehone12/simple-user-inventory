@@ -8,7 +8,7 @@ import (
 
 func TestFund(t *testing.T) {
 	common.SetupUser()
-	conn, err := db.NewConnection()
+	conn, err := db.NewOrm()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -19,7 +19,7 @@ func TestFund(t *testing.T) {
 }
 
 func TestCoin(t *testing.T) {
-	conn, err := db.NewConnection()
+	conn, err := db.NewOrm()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -34,7 +34,7 @@ func TestCoin(t *testing.T) {
 }
 
 func TestConsumeCoin(t *testing.T) {
-	conn, err := db.NewConnection()
+	conn, err := db.NewOrm()
 	if err != nil {
 		t.Fatal(err)
 	}

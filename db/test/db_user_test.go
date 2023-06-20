@@ -8,7 +8,7 @@ import (
 
 func TestCreate(t *testing.T) {
 	common.SetupEnv()
-	conn, err := db.NewConnection()
+	conn, err := db.NewOrm()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -22,7 +22,7 @@ func TestCreate(t *testing.T) {
 }
 
 func TestRead(t *testing.T) {
-	conn, err := db.NewConnection()
+	conn, err := db.NewOrm()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -37,7 +37,7 @@ func TestRead(t *testing.T) {
 }
 
 func TestReadId(t *testing.T) {
-	conn, err := db.NewConnection()
+	conn, err := db.NewOrm()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -51,7 +51,7 @@ func TestReadId(t *testing.T) {
 }
 
 func TestUpdate(t *testing.T) {
-	conn, err := db.NewConnection()
+	conn, err := db.NewOrm()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -70,7 +70,7 @@ func TestUpdate(t *testing.T) {
 }
 
 func TestUpdatePassword(t *testing.T) {
-	conn, err := db.NewConnection()
+	conn, err := db.NewOrm()
 	if err != nil {
 		t.Fatal(err)
 	}

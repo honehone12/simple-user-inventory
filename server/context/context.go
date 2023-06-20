@@ -8,5 +8,5 @@ import (
 
 type Context struct {
 	echo.Context
-	db.Connection
+	db.Orm
 }

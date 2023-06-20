@@ -6,9 +6,16 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func QuickErrorResponse(err error) error {
+func BadRequest() error {
 	return echo.NewHTTPError(
 		http.StatusBadRequest,
-		err.Error(),
+		"input value is not valid",
+	)
+}
+
+func ServiceError() error {
+	return echo.NewHTTPError(
+		http.StatusInternalServerError,
+		"service has unexpected error",
 	)
 }

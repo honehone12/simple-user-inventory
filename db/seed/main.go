@@ -11,7 +11,7 @@ func main() {
 		panic(err)
 	}
 
-	conn, err := db.NewConnection()
+	conn, err := db.NewOrm()
 	if err != nil {
 		panic(err)
 	}

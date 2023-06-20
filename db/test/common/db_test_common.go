@@ -15,7 +15,7 @@ func SetupEnv() {
 func SetupUser() {
 	SetupEnv()
 
-	conn, err := db.NewConnection()
+	conn, err := db.NewOrm()
 	if err != nil {
 		panic(err)
 	}

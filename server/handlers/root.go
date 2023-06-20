@@ -3,6 +3,7 @@ package handlers
 import (
 	"errors"
 	"net/http"
+	"simple-user-inventory/server/context"
 	"simple-user-inventory/server/quick"
 
 	"github.com/labstack/echo/v4"
@@ -21,17 +22,29 @@ type LoginForm struct {
 
 func Register(c echo.Context) error {
 	formData := RegistrationForm{}
-	if err := quick.QuickFormData(c, &formData); err != nil {
-		return quick.QuickErrorResponse(err)
+	if err := quick.ProcessFormData(c, &formData); err != nil {
+		c.Logger().Warn(err)
+		return quick.BadRequest()
 	}
 
-	return c.JSON(http.StatusOK, formData)
+	ctrl := c.(*context.Context).User()
+	if err := ctrl.Create(
+		formData.Name,
+		formData.Email,
+		formData.Password,
+	); err != nil {
+		c.Logger().Error(err)
+		return quick.ServiceError()
+	}
+
+	return c.NoContent(http.StatusOK)
 }
 
 func Login(c echo.Context) error {
 	formData := LoginForm{}
-	if err := quick.QuickFormData(c, &formData); err != nil {
-		return quick.QuickErrorResponse(err)
+	if err := quick.ProcessFormData(c, &formData); err != nil {
+		c.Logger().Warn(err)
+		return quick.BadRequest()
 	}
 
 	return errors.New("not implemented")
