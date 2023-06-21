@@ -1,23 +1,33 @@
 package server
 
 import (
-	"net/http"
 	"simple-user-inventory/db"
 	"simple-user-inventory/server/context"
 	"simple-user-inventory/server/handlers"
-	"simple-user-inventory/server/metadata"
 
+	gorillaS "github.com/gorilla/sessions"
+	echoS "github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
 
-func Run(metadata metadata.Metadata, listenAt string, db db.Orm) {
+func Run(
+	name string,
+	version string,
+	listenAt string,
+	db db.Orm,
+	store gorillaS.Store,
+) {
 	e := echo.New()
 	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			ctx := &context.Context{
 				Context: c,
 				Orm:     db,
+				Metadata: context.Metadata{
+					Name:    name,
+					Version: version,
+				},
 			}
 			return next(ctx)
 		}
@@ -25,10 +35,9 @@ func Run(metadata metadata.Metadata, listenAt string, db db.Orm) {
 	e.Validator = context.NewValidator()
 	e.Use(middleware.Recover())
 	e.Use(middleware.Logger())
+	e.Use(echoS.Middleware(store))
 
-	e.GET("/", func(c echo.Context) error {
-		return c.JSON(http.StatusOK, metadata)
-	})
+	e.GET("/", handlers.Root)
 	e.POST("/register", handlers.Register)
 	e.POST("/login", handlers.Login)
 

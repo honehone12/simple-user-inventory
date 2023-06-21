@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"simple-user-inventory/server/context"
 	"simple-user-inventory/server/quick"
+	"simple-user-inventory/server/session"
 
 	"github.com/labstack/echo/v4"
 )
@@ -17,6 +18,26 @@ type RegistrationForm struct {
 type LoginForm struct {
 	Email    string `form:"email" validate:"required,email,max=64"`
 	Password string `form:"password" validate:"required,alphanum,min=8,max=64"`
+}
+
+type RootResponse struct {
+	Name    string
+	Version string
+	Session string
+}
+
+func Root(c echo.Context) error {
+	uuid, err := session.Get(c)
+	if err != nil {
+		return err
+	}
+	ctx := c.(*context.Context)
+
+	return c.JSON(http.StatusOK, RootResponse{
+		Name:    ctx.Name,
+		Version: ctx.Version,
+		Session: uuid,
+	})
 }
 
 func Register(c echo.Context) error {
@@ -47,14 +68,19 @@ func Login(c echo.Context) error {
 	}
 
 	ctrl := c.(*context.Context).User()
-	ok, err := ctrl.VerifyPassword(formData.Email, formData.Password)
+	uuid, err := ctrl.VerifyPassword(formData.Email, formData.Password)
 	if err != nil {
 		c.Logger().Error(err)
 		return quick.ServiceError()
 	}
-	if !ok {
+	if len(uuid) == 0 {
 		return quick.BadRequest()
 	}
 
+	err = session.Set(c, uuid)
+	if err != nil {
+		c.Logger().Error(err)
+		return quick.ServiceError()
+	}
 	return c.NoContent(http.StatusOK)
 }

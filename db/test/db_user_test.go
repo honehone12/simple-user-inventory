@@ -94,11 +94,11 @@ func TestVerifyPassword(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	ok, err := orm.User().VerifyPassword("ginji@user.moe", "ginjikyunmoemoe")
+	uuid, err := orm.User().VerifyPassword("ginji@user.moe", "ginjikyunmoemoe")
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !ok {
+	if len(uuid) == 0 {
 		t.Fatal("ginjikyunmoemoe was not verified")
 	}
 }

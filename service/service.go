@@ -5,7 +5,8 @@ import (
 	"os"
 	"simple-user-inventory/db"
 	"simple-user-inventory/server"
-	"simple-user-inventory/server/metadata"
+	"simple-user-inventory/server/session"
+	"simple-user-inventory/server/utils"
 
 	"github.com/joho/godotenv"
 )
@@ -14,6 +15,10 @@ func Run() {
 	if err := godotenv.Load(); err != nil {
 		log.Fatal(err)
 	}
+	if utils.IsDev() {
+		log.Println("starting service as development mode")
+	}
+
 	name := os.Getenv("SERVICE_NAME")
 	if len(name) == 0 {
 		log.Fatal("env param SERVICE_NAME is empty")
@@ -26,14 +31,23 @@ func Run() {
 	if len(at) == 0 {
 		log.Fatal("env param SERVER_LISTEN_AT is empty")
 	}
+	secret := os.Getenv("SESSION_SECRET")
+	if len(secret) == 0 {
+		log.Fatal("env param SESSION_SECRET is empty")
+	}
 
 	orm, err := db.NewOrm()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	server.Run(metadata.Metadata{
-		Name:    name,
-		Version: ver,
-	}, at, orm)
+	store := session.NewSessionStroe(secret)
+
+	server.Run(
+		name,
+		ver,
+		at,
+		orm,
+		store,
+	)
 }

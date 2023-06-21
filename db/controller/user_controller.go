@@ -105,15 +105,20 @@ func (c UserController) UuidToId(uuid string) (uint, error) {
 	return user.ID, nil
 }
 
-func (c UserController) VerifyPassword(email string, password string) (bool, error) {
+func (c UserController) VerifyPassword(email string, password string) (string, error) {
 	user := &models.User{}
-	result := c.db.Select("PasswordHash", "Salt").Where("email = ?", email).Take(user)
+	result := c.db.Select("PasswordHash", "Salt", "Uuid").Where("email = ?", email).Take(user)
 	if result.Error != nil {
-		return false, result.Error
+		return "", result.Error
 	}
 
 	hasher := utils.NewPasswordHasher(password)
-	return hasher.Verify(user.PasswordHash, user.Salt)
+	ok, err := hasher.Verify(user.PasswordHash, user.Salt)
+	if err != nil || !ok {
+		return "", err
+	}
+
+	return user.Uuid, nil
 }
 
 func (c UserController) Update(
