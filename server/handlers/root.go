@@ -27,17 +27,31 @@ type RootResponse struct {
 }
 
 func Root(c echo.Context) error {
-	uuid, err := session.Get(c)
-	if err != nil {
-		return err
-	}
 	ctx := c.(*context.Context)
-
-	return c.JSON(http.StatusOK, RootResponse{
-		Name:    ctx.Name,
-		Version: ctx.Version,
-		Session: uuid,
-	})
+	data, err := session.GetAndVerify(c)
+	switch data.Status {
+	case session.Error:
+		c.Logger().Error(err)
+		return quick.ServiceError()
+	case session.NotStored:
+		return c.JSON(http.StatusOK, RootResponse{
+			Name:    ctx.Name,
+			Version: ctx.Version,
+			Session: "no",
+		})
+	case session.Rejected:
+		c.Logger().Warn(err)
+		return quick.BadRequest()
+	case session.Ok:
+		return c.JSON(http.StatusOK, RootResponse{
+			Name:    ctx.Name,
+			Version: ctx.Version,
+			Session: "ok",
+		})
+	default:
+		c.Logger().Fatal("not implemented")
+		return quick.ServiceError()
+	}
 }
 
 func Register(c echo.Context) error {
