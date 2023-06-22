@@ -21,7 +21,7 @@ func TestGain(t *testing.T) {
 		Yellow: 2,
 		Black:  1,
 	}
-	if err := orm.Jewel().Gain(1, &newJewel); err != nil {
+	if j, err := orm.Jewel().Gain(1, &newJewel); err != nil || *j != newJewel {
 		t.Fatal(err)
 	}
 }
@@ -60,34 +60,30 @@ func TestConsumeJewel(t *testing.T) {
 		t.Fatal(err)
 	}
 	// Ginji's id is 1
-	if err := orm.Jewel().Consume(1, &controller.JewelData{
+	j, err := orm.Jewel().Consume(1, &controller.JewelData{
 		Red:    5,
 		Blue:   4,
 		Green:  3,
 		Yellow: 2,
 		Black:  1,
-	}); err != nil {
-		t.Fatal(err)
-	}
-
-	jewel, err := orm.Jewel().Jewels(1)
+	})
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	if jewel.Red != 0 {
-		t.Fatalf("red is not 0, but %d", jewel.Red)
+	if j.Red != 0 {
+		t.Fatalf("red is not 0, but %d", j.Red)
 	}
-	if jewel.Blue != 0 {
-		t.Fatalf("blue is not 0, but %d", jewel.Blue)
+	if j.Blue != 0 {
+		t.Fatalf("blue is not 0, but %d", j.Blue)
 	}
-	if jewel.Green != 0 {
-		t.Fatalf("green is not 0, but %d", jewel.Green)
+	if j.Green != 0 {
+		t.Fatalf("green is not 0, but %d", j.Green)
 	}
-	if jewel.Yellow != 0 {
-		t.Fatalf("yellow is not 0, but %d", jewel.Yellow)
+	if j.Yellow != 0 {
+		t.Fatalf("yellow is not 0, but %d", j.Yellow)
 	}
-	if jewel.Black != 0 {
-		t.Fatalf("black is not 0, but %d", jewel.Black)
+	if j.Black != 0 {
+		t.Fatalf("black is not 0, but %d", j.Black)
 	}
 }

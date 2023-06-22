@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"simple-user-inventory/db"
@@ -8,10 +9,38 @@ import (
 	"simple-user-inventory/server/session"
 	"simple-user-inventory/server/utils"
 
+	"github.com/gorilla/sessions"
 	"github.com/joho/godotenv"
 )
 
-func Run() {
+func runInternal() (
+	string,
+	string,
+	string,
+	db.Orm,
+	sessions.Store,
+) {
+	fmt.Println("Admin Name?")
+	var aName string
+	fmt.Scan(&aName)
+	fmt.Print("\r\033[1A")
+
+	fmt.Println("****************************************************************")
+	fmt.Println("Admin Email?")
+	var aEmail string
+	fmt.Scan(&aEmail)
+	fmt.Print("\r\033[1A")
+
+	fmt.Println("****************************************************************")
+	fmt.Println("Admin Password?")
+	var aPassword string
+	fmt.Scan(&aPassword)
+	fmt.Print("\r\033[6A")
+	fmt.Println("****************************************************************")
+	fmt.Println("****************************************************************")
+	fmt.Println("****************************************************************")
+	fmt.Println("****************************************************************")
+
 	if err := godotenv.Load(); err != nil {
 		log.Fatal(err)
 	}
@@ -41,13 +70,16 @@ func Run() {
 		log.Fatal(err)
 	}
 
+	err = orm.User().CreateAdmin(aName, aEmail, aPassword)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	store := session.NewSessionStroe(secret)
 
-	server.Run(
-		name,
-		ver,
-		at,
-		orm,
-		store,
-	)
+	return name, ver, at, orm, store
+}
+
+func Run() {
+	server.Run(runInternal())
 }

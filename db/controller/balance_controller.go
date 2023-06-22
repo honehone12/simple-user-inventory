@@ -25,9 +25,9 @@ func (c BalanceController) Coin(id uint) (uint64, error) {
 	return balance.Coin, nil
 }
 
-func (c BalanceController) Fund(id uint, value uint64) error {
-	return c.db.Transaction(func(tx *gorm.DB) error {
-		balance := &models.Balance{}
+func (c BalanceController) Fund(id uint, value uint64) (uint64, error) {
+	balance := &models.Balance{}
+	err := c.db.Transaction(func(tx *gorm.DB) error {
 		result := tx.Select("ID", "Coin").Where("user_id = ?", id).Take(balance)
 		if result.Error != nil {
 			return result.Error
@@ -39,11 +39,15 @@ func (c BalanceController) Fund(id uint, value uint64) error {
 		result = tx.Model(balance).Update("Coin", balance.Coin+value)
 		return result.Error
 	})
+	if err != nil {
+		return 0, err
+	}
+	return balance.Coin, nil
 }
 
-func (c BalanceController) Consume(id uint, value uint64) error {
-	return c.db.Transaction(func(tx *gorm.DB) error {
-		balance := &models.Balance{}
+func (c BalanceController) Consume(id uint, value uint64) (uint64, error) {
+	balance := &models.Balance{}
+	err := c.db.Transaction(func(tx *gorm.DB) error {
 		result := tx.Select("ID", "Coin").Where("user_id = ?", id).Take(balance)
 		if result.Error != nil {
 			return result.Error
@@ -55,4 +59,8 @@ func (c BalanceController) Consume(id uint, value uint64) error {
 		result = tx.Model(balance).Update("Coin", balance.Coin-value)
 		return result.Error
 	})
+	if err != nil {
+		return 0, err
+	}
+	return balance.Coin, nil
 }

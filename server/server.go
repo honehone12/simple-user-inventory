@@ -4,6 +4,8 @@ import (
 	"simple-user-inventory/db"
 	"simple-user-inventory/server/context"
 	"simple-user-inventory/server/handlers"
+	"simple-user-inventory/server/handlers/balance"
+	"simple-user-inventory/server/handlers/jewel"
 
 	gorillaS "github.com/gorilla/sessions"
 	echoS "github.com/labstack/echo-contrib/session"
@@ -40,6 +42,12 @@ func Run(
 	e.GET("/", handlers.Root)
 	e.POST("/register", handlers.Register)
 	e.POST("/login", handlers.Login)
+
+	e.GET("/balance/coin", balance.Coin)
+	e.POST("/balance/fund", balance.Fund)
+
+	e.GET("/jewel/jewels", jewel.Jewels)
+	e.POST("/jewel/gain", jewel.Gain)
 
 	e.Logger.Fatal(e.Start(listenAt))
 }

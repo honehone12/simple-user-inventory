@@ -13,7 +13,7 @@ func TestFund(t *testing.T) {
 		t.Fatal(err)
 	}
 	// Ginji's id is 1
-	if err = orm.Balance().Fund(1, 1000); err != nil {
+	if coin, err := orm.Balance().Fund(1, 1000); err != nil || coin != 1000 {
 		t.Fatal(err)
 	}
 }
@@ -39,15 +39,7 @@ func TestConsumeCoin(t *testing.T) {
 		t.Fatal(err)
 	}
 	// Ginji's id is 1
-	err = orm.Balance().Consume(1, 1000)
-	if err != nil {
+	if coin, err := orm.Balance().Consume(1, 1000); err != nil || coin != 0 {
 		t.Fatal(err)
-	}
-	coin, err := orm.Balance().Coin(1)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if coin != 0 {
-		t.Fatalf("balance is not 0, but %d", coin)
 	}
 }

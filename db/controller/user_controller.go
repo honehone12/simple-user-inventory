@@ -1,10 +1,15 @@
 package controller
 
 import (
+	"errors"
 	"simple-user-inventory/db/models"
 	"simple-user-inventory/db/utils"
 
 	"gorm.io/gorm"
+)
+
+var (
+	ErrorInvalidPassword = errors.New("invalid password")
 )
 
 type UserController struct {
@@ -61,11 +66,25 @@ func (c UserController) Create(
 	return result.Error
 }
 
+func (c UserController) CreateAdmin(
+	name string,
+	email string,
+	password string,
+) error {
+	user, err := models.NewAdmin(name, email, password)
+	if err != nil {
+		return err
+	}
+
+	result := c.db.Create(user)
+	return result.Error
+}
+
 func (c UserController) Read(email string) (*models.User, error) {
 	user := &models.User{}
 	result := c.db.Select(
 		"ID", "CreatedAt", "UpdatedAt",
-		"Name", "Uuid", "Email",
+		"Name", "Uuid", "Email", "Role",
 	).Where("email = ?", email).Take(user)
 	if result.Error != nil {
 		return nil, result.Error
@@ -77,7 +96,7 @@ func (c UserController) ReadByUuid(uuid string) (*models.User, error) {
 	user := &models.User{}
 	result := c.db.Select(
 		"ID", "CreatedAt", "UpdatedAt",
-		"Name", "Uuid", "Email",
+		"Name", "Uuid", "Email", "Role",
 	).Where("uuid = ?", uuid).Take(user)
 	if result.Error != nil {
 		return nil, result.Error
@@ -114,8 +133,11 @@ func (c UserController) VerifyPassword(email string, password string) (string, e
 
 	hasher := utils.NewPasswordHasher(password)
 	ok, err := hasher.Verify(user.PasswordHash, user.Salt)
-	if err != nil || !ok {
+	if err != nil {
 		return "", err
+	}
+	if !ok {
+		return "", ErrorInvalidPassword
 	}
 
 	return user.Uuid, nil

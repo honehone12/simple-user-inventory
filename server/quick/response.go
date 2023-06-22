@@ -19,3 +19,10 @@ func ServiceError() error {
 		"service has unexpected error",
 	)
 }
+
+func NotAllowed() error {
+	return echo.NewHTTPError(
+		http.StatusForbidden,
+		"not allowed",
+	)
+}

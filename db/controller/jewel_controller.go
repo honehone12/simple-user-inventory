@@ -99,9 +99,9 @@ func (c JewelController) Jewels(id uint) (*JewelData, error) {
 	return FromJewel(jewel), nil
 }
 
-func (c JewelController) Gain(id uint, jewelData *JewelData) error {
-	return c.db.Transaction(func(tx *gorm.DB) error {
-		jewel := &models.Jewel{}
+func (c JewelController) Gain(id uint, jewelData *JewelData) (*JewelData, error) {
+	jewel := &models.Jewel{}
+	err := c.db.Transaction(func(tx *gorm.DB) error {
 		result := tx.Select(
 			"ID",
 			"Red",
@@ -128,11 +128,15 @@ func (c JewelController) Gain(id uint, jewelData *JewelData) error {
 		).Updates(add)
 		return result.Error
 	})
+	if err != nil {
+		return nil, err
+	}
+	return FromJewel(jewel), nil
 }
 
-func (c JewelController) Consume(id uint, jewelData *JewelData) error {
-	return c.db.Transaction(func(tx *gorm.DB) error {
-		jewel := &models.Jewel{}
+func (c JewelController) Consume(id uint, jewelData *JewelData) (*JewelData, error) {
+	jewel := &models.Jewel{}
+	err := c.db.Transaction(func(tx *gorm.DB) error {
 		result := tx.Select(
 			"ID",
 			"Red",
@@ -159,4 +163,8 @@ func (c JewelController) Consume(id uint, jewelData *JewelData) error {
 		).Updates(sub)
 		return result.Error
 	})
+	if err != nil {
+		return nil, err
+	}
+	return FromJewel(jewel), nil
 }

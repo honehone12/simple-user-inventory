@@ -11,12 +11,12 @@ func main() {
 		panic(err)
 	}
 
-	conn, err := db.NewOrm()
+	orm, err := db.NewOrm()
 	if err != nil {
 		panic(err)
 	}
 
-	if err = conn.User().Seed(); err != nil {
+	if err = orm.User().Seed(); err != nil {
 		panic(err)
 	}
 }

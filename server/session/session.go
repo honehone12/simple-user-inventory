@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"simple-user-inventory/server/context"
 	"simple-user-inventory/server/quick"
+
 	"simple-user-inventory/server/utils"
 
 	uuidG "github.com/google/uuid"
@@ -17,6 +18,10 @@ import (
 const (
 	sessionName = "__suis__session"
 	uuidKey     = "__ui"
+)
+
+var (
+	ErrorSessionNotStored = errors.New("session not stored")
 )
 
 type SessionStatus uint8
@@ -70,7 +75,7 @@ func Get(c echo.Context) (string, error) {
 
 	uuid, ok := sess.Values[uuidKey]
 	if !ok {
-		return "", nil
+		return "", ErrorSessionNotStored
 	}
 
 	uuidStr, ok := uuid.(string)
@@ -83,20 +88,20 @@ func Get(c echo.Context) (string, error) {
 
 func GetAndVerify(c echo.Context) (SessionData, error) {
 	uuid, err := Get(c)
-	if err != nil {
+	if err == ErrorSessionNotStored {
+		return SessionData{
+			Status: NotStored,
+			Uuid:   "",
+			Id:     0,
+		}, err
+	} else if err != nil {
 		return SessionData{
 			Status: Error,
 			Uuid:   "",
 			Id:     0,
 		}, err
 	}
-	if len(uuid) == 0 {
-		return SessionData{
-			Status: NotStored,
-			Uuid:   "",
-			Id:     0,
-		}, nil
-	}
+
 	if _, err = uuidG.Parse(uuid); err != nil {
 		return SessionData{
 			Status: Rejected,
@@ -120,4 +125,24 @@ func GetAndVerify(c echo.Context) (SessionData, error) {
 		Uuid:   uuid,
 		Id:     id,
 	}, nil
+}
+
+func RequireSession(c echo.Context) (SessionData, error) {
+	sess, err := GetAndVerify(c)
+	switch sess.Status {
+	case Ok:
+		return sess, nil
+	case Error:
+		c.Logger().Error(err)
+		return sess, quick.ServiceError()
+	case Rejected:
+		fallthrough
+	case NotStored:
+		c.Logger().Warn(err)
+		return sess, quick.NotAllowed()
+	default:
+		c.Logger().Error("not implemented")
+		c.Logger().Error(err)
+		return sess, quick.ServiceError()
+	}
 }

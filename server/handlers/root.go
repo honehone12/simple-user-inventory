@@ -2,11 +2,13 @@ package handlers
 
 import (
 	"net/http"
+	"simple-user-inventory/db/controller"
 	"simple-user-inventory/server/context"
 	"simple-user-inventory/server/quick"
 	"simple-user-inventory/server/session"
 
 	"github.com/labstack/echo/v4"
+	"gorm.io/gorm"
 )
 
 type RegistrationForm struct {
@@ -23,35 +25,14 @@ type LoginForm struct {
 type RootResponse struct {
 	Name    string
 	Version string
-	Session string
 }
 
 func Root(c echo.Context) error {
 	ctx := c.(*context.Context)
-	data, err := session.GetAndVerify(c)
-	switch data.Status {
-	case session.Error:
-		c.Logger().Error(err)
-		return quick.ServiceError()
-	case session.NotStored:
-		return c.JSON(http.StatusOK, RootResponse{
-			Name:    ctx.Name,
-			Version: ctx.Version,
-			Session: "no",
-		})
-	case session.Rejected:
-		c.Logger().Warn(err)
-		return quick.BadRequest()
-	case session.Ok:
-		return c.JSON(http.StatusOK, RootResponse{
-			Name:    ctx.Name,
-			Version: ctx.Version,
-			Session: "ok",
-		})
-	default:
-		c.Logger().Fatal("not implemented")
-		return quick.ServiceError()
-	}
+	return c.JSON(http.StatusOK, RootResponse{
+		Name:    ctx.Name,
+		Version: ctx.Version,
+	})
 }
 
 func Register(c echo.Context) error {
@@ -83,12 +64,12 @@ func Login(c echo.Context) error {
 
 	ctrl := c.(*context.Context).User()
 	uuid, err := ctrl.VerifyPassword(formData.Email, formData.Password)
-	if err != nil {
+	if err == gorm.ErrRecordNotFound || err == controller.ErrorInvalidPassword {
+		c.Logger().Error(err)
+		return quick.BadRequest()
+	} else if err != nil {
 		c.Logger().Error(err)
 		return quick.ServiceError()
-	}
-	if len(uuid) == 0 {
-		return quick.BadRequest()
 	}
 
 	err = session.Set(c, uuid)
