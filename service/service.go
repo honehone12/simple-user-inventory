@@ -20,26 +20,29 @@ func runInternal() (
 	db.Orm,
 	sessions.Store,
 ) {
+	// want to replace with ecdsa sig or
+	// at least 32bytes rand gen values.
+
 	fmt.Println("Admin Name?")
 	var aName string
 	fmt.Scan(&aName)
 	fmt.Print("\r\033[1A")
 
-	fmt.Println("****************************************************************")
+	fmt.Println("                                                                ")
 	fmt.Println("Admin Email?")
 	var aEmail string
 	fmt.Scan(&aEmail)
 	fmt.Print("\r\033[1A")
 
-	fmt.Println("****************************************************************")
+	fmt.Println("                                                                ")
 	fmt.Println("Admin Password?")
 	var aPassword string
 	fmt.Scan(&aPassword)
 	fmt.Print("\r\033[6A")
-	fmt.Println("****************************************************************")
-	fmt.Println("****************************************************************")
-	fmt.Println("****************************************************************")
-	fmt.Println("****************************************************************")
+	fmt.Println("                                                                ")
+	fmt.Println("                                                                ")
+	fmt.Println("                                                                ")
+	fmt.Println("                                                                ")
 
 	if err := godotenv.Load(); err != nil {
 		log.Fatal(err)

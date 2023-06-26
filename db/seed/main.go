@@ -19,4 +19,7 @@ func main() {
 	if err = orm.User().Seed(); err != nil {
 		panic(err)
 	}
+	if err = orm.Item().Seed(); err != nil {
+		panic(err)
+	}
 }

@@ -15,16 +15,20 @@ type Orm struct {
 	db *gorm.DB
 }
 
-func (conn Orm) User() controller.UserController {
-	return controller.NewUserController(conn.db)
+func (orm Orm) User() controller.UserController {
+	return controller.NewUserController(orm.db)
 }
 
-func (conn Orm) Balance() controller.BalanceController {
-	return controller.NewBalanceController(conn.db)
+func (orm Orm) Balance() controller.BalanceController {
+	return controller.NewBalanceController(orm.db)
 }
 
-func (conn Orm) Jewel() controller.JewelController {
-	return controller.NewJewelController(conn.db)
+func (orm Orm) Jewel() controller.JewelController {
+	return controller.NewJewelController(orm.db)
+}
+
+func (orm Orm) Item() controller.ItemController {
+	return controller.NewItemController(orm.db)
 }
 
 func NewOrm() (Orm, error) {

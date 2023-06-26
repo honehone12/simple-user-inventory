@@ -2,7 +2,7 @@ package models
 
 import (
 	"simple-user-inventory/db/utils"
-	role "simple-user-inventory/operation/Role"
+	"simple-user-inventory/operation/role"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"

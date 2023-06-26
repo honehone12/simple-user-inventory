@@ -5,7 +5,9 @@ import (
 	"simple-user-inventory/server/context"
 	"simple-user-inventory/server/handlers"
 	"simple-user-inventory/server/handlers/balance"
+	"simple-user-inventory/server/handlers/items"
 	"simple-user-inventory/server/handlers/jewel"
+	"simple-user-inventory/server/handlers/user"
 
 	gorillaS "github.com/gorilla/sessions"
 	echoS "github.com/labstack/echo-contrib/session"
@@ -48,6 +50,11 @@ func Run(
 
 	e.GET("/jewel/jewels", jewel.Jewels)
 	e.POST("/jewel/gain", jewel.Gain)
+
+	// don't want to open in same domain
+	e.POST("/items/create", items.Create)
+
+	e.POST("/user/items/purchase", user.Purchase)
 
 	e.Logger.Fatal(e.Start(listenAt))
 }

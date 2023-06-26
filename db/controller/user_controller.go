@@ -173,3 +173,11 @@ func (c UserController) UpdatePassword(id uint, password string) error {
 	})
 	return result.Error
 }
+
+func (c UserController) Purchase(id uint, itemId uint) error {
+	return c.db.Model(&models.User{
+		Model: gorm.Model{ID: id},
+	}).Association("Items").Append(&models.Item{
+		Model: gorm.Model{ID: itemId},
+	})
+}
