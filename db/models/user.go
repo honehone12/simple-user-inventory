@@ -8,11 +8,17 @@ import (
 	"gorm.io/gorm"
 )
 
+type UserData struct {
+	Name  string `json:"name" gorm:"not null;size:128"`
+	Uuid  string `json:"uuid" gorm:"unique;not null;size:64"`
+	Email string `json:"email" gorm:"unique;not null;size:128"`
+}
+
 type User struct {
 	gorm.Model
-	Name         string `gorm:"not null;size:256"`
-	Uuid         string `gorm:"unique;not null;size:64"`
-	Email        string `gorm:"unique;not null;size:256"`
+
+	*UserData `gorm:"not null"`
+
 	Salt         []byte `gorm:"not null;size:64"`
 	PasswordHash []byte `gorm:"not null;size:64"`
 
@@ -53,15 +59,28 @@ func newUserInternl(
 
 	uuid := uuid.NewString()
 	return &User{
-		Name:         name,
-		Uuid:         uuid,
-		Email:        email,
+		UserData: &UserData{
+			Name:  name,
+			Uuid:  uuid,
+			Email: email,
+		},
+
 		Salt:         hashed.Salt,
 		PasswordHash: hashed.DK,
 
 		Role: role,
 
-		Balance: &Balance{},
-		Jewel:   &Jewel{},
+		Balance: &Balance{
+			BalanceData: &BalanceData{Coin: 0},
+		},
+		Jewel: &Jewel{
+			JewelData: &JewelData{
+				Red:    0,
+				Blue:   0,
+				Green:  0,
+				Yellow: 0,
+				Black:  0,
+			},
+		},
 	}, nil
 }

@@ -2,7 +2,7 @@ package jewel
 
 import (
 	"net/http"
-	"simple-user-inventory/db/controller"
+	"simple-user-inventory/db/models"
 	"simple-user-inventory/operation/jewel"
 	"simple-user-inventory/server/context"
 	"simple-user-inventory/server/quick"
@@ -11,8 +11,6 @@ import (
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
 )
-
-type JewelResponse controller.JewelData
 
 func Jewels(c echo.Context) error {
 	sess, err := session.RequireSession(c)
@@ -30,7 +28,7 @@ func Jewels(c echo.Context) error {
 		return quick.ServiceError()
 	}
 
-	return c.JSON(http.StatusOK, *j)
+	return c.JSON(http.StatusOK, j)
 }
 
 func Gain(c echo.Context) error {
@@ -39,7 +37,7 @@ func Gain(c echo.Context) error {
 		return err
 	}
 
-	add := &controller.JewelData{
+	add := &models.JewelData{
 		Red:    jewel.RandomRed(),
 		Blue:   jewel.RandomBlue(),
 		Green:  jewel.RandomGreen(),
@@ -56,5 +54,5 @@ func Gain(c echo.Context) error {
 		return quick.ServiceError()
 	}
 
-	return c.JSON(http.StatusOK, *j)
+	return c.JSON(http.StatusOK, j)
 }

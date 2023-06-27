@@ -152,8 +152,10 @@ func (c UserController) Update(
 		Model: gorm.Model{ID: id},
 	}).Select("Name", "Email").Updates(&models.User{
 		Model: gorm.Model{ID: id},
-		Name:  name,
-		Email: email,
+		UserData: &models.UserData{
+			Name:  name,
+			Email: email,
+		},
 	})
 	return result.Error
 }
@@ -180,4 +182,17 @@ func (c UserController) Purchase(id uint, itemId uint) error {
 	}).Association("Items").Append(&models.Item{
 		Model: gorm.Model{ID: itemId},
 	})
+}
+
+func (c UserController) ReadOwnedItems(id uint) ([]models.Item, error) {
+	items := []models.Item{}
+	err := c.db.Model(&models.User{
+		Model: gorm.Model{ID: id},
+	}).Select(
+		"ID", "Name", "Description", "Price",
+	).Association("Items").Find(&items)
+	if err != nil {
+		return nil, err
+	}
+	return items, nil
 }

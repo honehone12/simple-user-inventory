@@ -10,10 +10,6 @@ import (
 	"gorm.io/gorm"
 )
 
-type BalanceResponse struct {
-	Coin uint64
-}
-
 func Coin(c echo.Context) error {
 	sess, err := session.RequireSession(c)
 	if err != nil {
@@ -30,9 +26,7 @@ func Coin(c echo.Context) error {
 		return quick.ServiceError()
 	}
 
-	return c.JSON(http.StatusOK, BalanceResponse{
-		Coin: coin,
-	})
+	return c.JSON(http.StatusOK, coin)
 }
 
 func Fund(c echo.Context) error {
@@ -51,7 +45,5 @@ func Fund(c echo.Context) error {
 		return quick.ServiceError()
 	}
 
-	return c.JSON(http.StatusOK, BalanceResponse{
-		Coin: coin,
-	})
+	return c.JSON(http.StatusOK, coin)
 }

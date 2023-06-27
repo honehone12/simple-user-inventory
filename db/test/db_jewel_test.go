@@ -2,7 +2,7 @@ package test
 
 import (
 	"simple-user-inventory/db"
-	"simple-user-inventory/db/controller"
+	"simple-user-inventory/db/models"
 	"simple-user-inventory/db/test/common"
 	"testing"
 )
@@ -14,7 +14,7 @@ func TestGain(t *testing.T) {
 		t.Fatal(err)
 	}
 	// Ginji's id is 1
-	newJewel := controller.JewelData{
+	newJewel := models.JewelData{
 		Red:    5,
 		Blue:   4,
 		Green:  3,
@@ -60,7 +60,7 @@ func TestConsumeJewel(t *testing.T) {
 		t.Fatal(err)
 	}
 	// Ginji's id is 1
-	j, err := orm.Jewel().Consume(1, &controller.JewelData{
+	j, err := orm.Jewel().Consume(1, &models.JewelData{
 		Red:    5,
 		Blue:   4,
 		Green:  3,

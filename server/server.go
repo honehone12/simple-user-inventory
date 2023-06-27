@@ -8,6 +8,7 @@ import (
 	"simple-user-inventory/server/handlers/items"
 	"simple-user-inventory/server/handlers/jewel"
 	"simple-user-inventory/server/handlers/user"
+	"simple-user-inventory/server/utils"
 
 	gorillaS "github.com/gorilla/sessions"
 	echoS "github.com/labstack/echo-contrib/session"
@@ -37,7 +38,9 @@ func Run(
 		}
 	})
 	e.Validator = context.NewValidator()
-	e.Use(middleware.Recover())
+	if !utils.IsDev() {
+		e.Use(middleware.Recover())
+	}
 	e.Use(middleware.Logger())
 	e.Use(echoS.Middleware(store))
 
@@ -54,6 +57,7 @@ func Run(
 	// don't want to open in same domain
 	e.POST("/items/create", items.Create)
 
+	e.GET("/user/items/list", user.Items)
 	e.POST("/user/items/purchase", user.Purchase)
 
 	e.Logger.Fatal(e.Start(listenAt))

@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"simple-user-inventory/server/context"
 	"simple-user-inventory/server/quick"
+	"time"
 
 	"simple-user-inventory/server/utils"
 
@@ -16,12 +17,15 @@ import (
 )
 
 const (
-	sessionName = "__suis__session"
-	uuidKey     = "__ui"
+	sessionName  = "__suis__session"
+	uuidKey      = "__ui"
+	createdAtKey = "__ca"
 )
 
 var (
-	ErrorSessionNotStored = errors.New("session not stored")
+	ErrorSessionNotStored  = errors.New("session not stored")
+	ErrorSessionExpired    = errors.New("session is expired")
+	ErrorSessionParseError = errors.New("could not parsed stored value")
 )
 
 type SessionStatus uint8
@@ -44,7 +48,7 @@ func NewSessionStroe(secret string) sessions.Store {
 }
 
 func NewSessionOptions() *sessions.Options {
-	// these options are only valid for browsers
+	// these options are only for browsers
 	return &sessions.Options{
 		Path:     "/",
 		MaxAge:   60 * 60 * 24,
@@ -61,8 +65,10 @@ func Set(c echo.Context, uuid string) error {
 		return quick.ServiceError()
 	}
 
+	now := time.Now().Unix()
 	sess.Options = NewSessionOptions()
 	sess.Values[uuidKey] = uuid
+	sess.Values[createdAtKey] = now
 	sess.Save(c.Request(), c.Response())
 	return nil
 }
@@ -73,6 +79,19 @@ func Get(c echo.Context) (string, error) {
 		return "", err
 	}
 
+	createdAt, ok := sess.Values[createdAtKey]
+	if !ok {
+		return "", ErrorSessionNotStored
+	}
+	expiration, ok := createdAt.(int64)
+	if !ok {
+		return "", ErrorSessionParseError
+	}
+	expiration += 60 * 60
+	if time.Now().Unix() > expiration {
+		return "", ErrorSessionExpired
+	}
+
 	uuid, ok := sess.Values[uuidKey]
 	if !ok {
 		return "", ErrorSessionNotStored
@@ -80,7 +99,7 @@ func Get(c echo.Context) (string, error) {
 
 	uuidStr, ok := uuid.(string)
 	if !ok {
-		return "", errors.New("could not read stored uuid value as string")
+		return "", ErrorSessionParseError
 	}
 
 	return uuidStr, nil
@@ -88,7 +107,10 @@ func Get(c echo.Context) (string, error) {
 
 func GetAndVerify(c echo.Context) (SessionData, error) {
 	uuid, err := Get(c)
-	if err == ErrorSessionNotStored {
+	if err == ErrorSessionNotStored ||
+		err == ErrorSessionExpired ||
+		err == ErrorSessionParseError {
+
 		return SessionData{
 			Status: NotStored,
 			Uuid:   "",

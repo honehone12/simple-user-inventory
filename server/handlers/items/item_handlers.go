@@ -13,9 +13,9 @@ import (
 )
 
 type ItemRegistrationForm struct {
-	Name        string `form:"name"`
-	Description string `form:"description"`
-	Price       uint64 `form:"price"`
+	Name        string `form:"name" validate:"required,alphanum,min=2,max=64"`
+	Description string `form:"description" validate:"required,alphanumunicode,min=2,max=256"` //256
+	Price       uint64 `form:"price" validate:"required"`
 }
 
 func requireAdmin(c echo.Context, uuid string) (*models.User, error) {

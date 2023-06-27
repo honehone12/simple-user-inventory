@@ -2,13 +2,16 @@ package models
 
 import "gorm.io/gorm"
 
+type ItemData struct {
+	Name        string `json:"name" gorm:"unique;not null;size:128"`
+	Description string `json:"description" gorm:"not null;size:512"`
+	Price       uint64 `json:"price" gorm:"not null"`
+}
+
 type Item struct {
 	gorm.Model
 
-	Name        string `gorm:"unique;not null;size:256"`
-	Description string `gorm:"not null;size:512"`
-
-	Price uint64 `gorm:"not null"`
+	*ItemData `gorm:"not null"`
 
 	// need somewhere else to get data,params,etc...
 
