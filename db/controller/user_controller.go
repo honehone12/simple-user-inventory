@@ -189,7 +189,7 @@ func (c UserController) Purchase(id uint, itemId uint) (*models.BalanceData, err
 		}
 
 		item := &models.Item{}
-		result := tx.Select("Price").Find(item, id)
+		result := tx.Select("Price").Find(item, itemId)
 		if result.Error != nil {
 			return result.Error
 		}
