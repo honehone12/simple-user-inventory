@@ -58,9 +58,10 @@ func Items(c echo.Context) error {
 		return quick.ServiceError()
 	}
 
-	itemMap := make(UserItemsResponse)
-	for _, item := range it {
-		itemMap[item.ID] = &item.ItemData
+	len := len(it)
+	itemMap := make(UserItemsResponse, len)
+	for i := 0; i < len; i++ {
+		itemMap[it[i].ID] = &it[i].ItemData
 	}
 
 	return c.JSON(http.StatusOK, itemMap)
