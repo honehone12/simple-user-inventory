@@ -26,7 +26,7 @@ func (c JewelController) Jewels(id uint) (*models.JewelData, error) {
 	if result.Error != nil {
 		return nil, result.Error
 	}
-	return jewel.JewelData, nil
+	return &jewel.JewelData, nil
 }
 
 func (c JewelController) Gain(id uint, j *models.JewelData) (*models.JewelData, error) {
@@ -61,7 +61,7 @@ func (c JewelController) Gain(id uint, j *models.JewelData) (*models.JewelData, 
 	if err != nil {
 		return nil, err
 	}
-	return jewel.JewelData, nil
+	return &jewel.JewelData, nil
 }
 
 func (c JewelController) Consume(id uint, j *models.JewelData) (*models.JewelData, error) {
@@ -96,5 +96,5 @@ func (c JewelController) Consume(id uint, j *models.JewelData) (*models.JewelDat
 	if err != nil {
 		return nil, err
 	}
-	return jewel.JewelData, nil
+	return &jewel.JewelData, nil
 }

@@ -10,5 +10,5 @@ type Balance struct {
 	gorm.Model
 	UserID uint `gorm:"unique"`
 
-	*BalanceData `gorm:"not null"`
+	BalanceData `gorm:"not null"`
 }

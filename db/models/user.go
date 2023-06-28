@@ -17,7 +17,7 @@ type UserData struct {
 type User struct {
 	gorm.Model
 
-	*UserData `gorm:"not null"`
+	UserData `gorm:"not null"`
 
 	Salt         []byte `gorm:"not null;size:64"`
 	PasswordHash []byte `gorm:"not null;size:64"`
@@ -59,7 +59,7 @@ func newUserInternl(
 
 	uuid := uuid.NewString()
 	return &User{
-		UserData: &UserData{
+		UserData: UserData{
 			Name:  name,
 			Uuid:  uuid,
 			Email: email,
@@ -71,10 +71,10 @@ func newUserInternl(
 		Role: role,
 
 		Balance: &Balance{
-			BalanceData: &BalanceData{Coin: 0},
+			BalanceData: BalanceData{Coin: 0},
 		},
 		Jewel: &Jewel{
-			JewelData: &JewelData{
+			JewelData: JewelData{
 				Red:    0,
 				Blue:   0,
 				Green:  0,

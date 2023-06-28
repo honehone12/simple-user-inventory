@@ -54,11 +54,11 @@ func Run(
 	e.GET("/jewel/jewels", jewel.Jewels)
 	e.POST("/jewel/gain", jewel.Gain)
 
-	// don't want to open in same domain
-	e.POST("/items/create", items.Create)
+	e.GET("/items/list", user.Items)
+	e.POST("/items/purchase", user.Purchase)
 
-	e.GET("/user/items/list", user.Items)
-	e.POST("/user/items/purchase", user.Purchase)
+	// want another service(admin or dev)
+	e.POST("/items/create", items.Create)
 
 	e.Logger.Fatal(e.Start(listenAt))
 }

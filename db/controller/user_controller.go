@@ -9,7 +9,8 @@ import (
 )
 
 var (
-	ErrorInvalidPassword = errors.New("invalid password")
+	ErrorInvalidPassword  = errors.New("invalid password")
+	ErrorAlreadyPurchased = errors.New("already purchased")
 )
 
 type UserController struct {
@@ -152,7 +153,7 @@ func (c UserController) Update(
 		Model: gorm.Model{ID: id},
 	}).Select("Name", "Email").Updates(&models.User{
 		Model: gorm.Model{ID: id},
-		UserData: &models.UserData{
+		UserData: models.UserData{
 			Name:  name,
 			Email: email,
 		},
@@ -176,12 +177,44 @@ func (c UserController) UpdatePassword(id uint, password string) error {
 	return result.Error
 }
 
-func (c UserController) Purchase(id uint, itemId uint) error {
-	return c.db.Model(&models.User{
-		Model: gorm.Model{ID: id},
-	}).Association("Items").Append(&models.Item{
-		Model: gorm.Model{ID: itemId},
+func (c UserController) Purchase(id uint, itemId uint) (*models.BalanceData, error) {
+	balance := &models.Balance{}
+	err := c.db.Transaction(func(tx *gorm.DB) error {
+		user := &models.User{
+			Model: gorm.Model{ID: id},
+		}
+		count := tx.Model(user).Where("id = ?", itemId).Association("Items").Count()
+		if count != 0 {
+			return ErrorAlreadyPurchased
+		}
+
+		item := &models.Item{}
+		result := tx.Select("Price").Find(item, id)
+		if result.Error != nil {
+			return result.Error
+		}
+
+		result = tx.Select("ID", "Coin").Where("user_id = ?", id).Take(balance)
+		if result.Error != nil {
+			return result.Error
+		}
+		if item.Price > balance.Coin {
+			return ErrorBalanceNotEnough
+		}
+
+		result = tx.Model(balance).Update("Coin", balance.Coin-item.Price)
+		if result.Error != nil {
+			return result.Error
+		}
+
+		return tx.Model(user).Association("Items").Append(&models.Item{
+			Model: gorm.Model{ID: itemId},
+		})
 	})
+	if err != nil {
+		return nil, err
+	}
+	return &balance.BalanceData, nil
 }
 
 func (c UserController) ReadOwnedItems(id uint) ([]models.Item, error) {

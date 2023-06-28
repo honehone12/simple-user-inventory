@@ -19,7 +19,7 @@ type Jewel struct {
 	gorm.Model
 	UserID uint `gorm:"unique"`
 
-	*JewelData `gorm:"not null"`
+	JewelData `gorm:"not null"`
 }
 
 // Add JewelData to jewel. JewelData will contain result.

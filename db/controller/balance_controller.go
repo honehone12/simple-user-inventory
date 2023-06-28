@@ -8,6 +8,11 @@ import (
 	"gorm.io/gorm"
 )
 
+var (
+	ErrorBalanceTooMuch   = fmt.Errorf("balance overflow")
+	ErrorBalanceNotEnough = fmt.Errorf("balance underflow")
+)
+
 type BalanceController struct {
 	db *gorm.DB
 }
@@ -22,7 +27,7 @@ func (c BalanceController) Coin(id uint) (*models.BalanceData, error) {
 	if result.Error != nil {
 		return nil, result.Error
 	}
-	return balance.BalanceData, nil
+	return &balance.BalanceData, nil
 }
 
 func (c BalanceController) Fund(id uint, value uint64) (*models.BalanceData, error) {
@@ -33,7 +38,7 @@ func (c BalanceController) Fund(id uint, value uint64) (*models.BalanceData, err
 			return result.Error
 		}
 		if value > (math.MaxUint64 - balance.Coin) {
-			return fmt.Errorf("balance overflow %d + %d", balance.Coin, value)
+			return ErrorBalanceTooMuch
 		}
 
 		result = tx.Model(balance).Update("Coin", balance.Coin+value)
@@ -42,7 +47,7 @@ func (c BalanceController) Fund(id uint, value uint64) (*models.BalanceData, err
 	if err != nil {
 		return nil, err
 	}
-	return balance.BalanceData, nil
+	return &balance.BalanceData, nil
 }
 
 func (c BalanceController) Consume(id uint, value uint64) (*models.BalanceData, error) {
@@ -53,7 +58,7 @@ func (c BalanceController) Consume(id uint, value uint64) (*models.BalanceData, 
 			return result.Error
 		}
 		if value > balance.Coin {
-			return fmt.Errorf("balance underflow %d - %d", balance.Coin, value)
+			return ErrorBalanceNotEnough
 		}
 
 		result = tx.Model(balance).Update("Coin", balance.Coin-value)
@@ -62,5 +67,5 @@ func (c BalanceController) Consume(id uint, value uint64) (*models.BalanceData, 
 	if err != nil {
 		return nil, err
 	}
-	return balance.BalanceData, nil
+	return &balance.BalanceData, nil
 }

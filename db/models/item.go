@@ -11,7 +11,7 @@ type ItemData struct {
 type Item struct {
 	gorm.Model
 
-	*ItemData `gorm:"not null"`
+	ItemData `gorm:"not null"`
 
 	// need somewhere else to get data,params,etc...
 

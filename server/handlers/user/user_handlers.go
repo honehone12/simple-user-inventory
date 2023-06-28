@@ -2,6 +2,7 @@ package user
 
 import (
 	"net/http"
+	"simple-user-inventory/db/controller"
 	"simple-user-inventory/db/models"
 	"simple-user-inventory/server/context"
 	"simple-user-inventory/server/quick"
@@ -28,15 +29,20 @@ func Purchase(c echo.Context) error {
 		return quick.BadRequest()
 	}
 
-	// consume coins
-
 	ctrl := c.(*context.Context).User()
-	if err = ctrl.Purchase(sess.Id, formData.Id); err != nil {
+	balance, err := ctrl.Purchase(sess.Id, formData.Id)
+	if err == controller.ErrorBalanceNotEnough ||
+		err == controller.ErrorAlreadyPurchased {
+
+		c.Logger().Warn(err)
+		return quick.BadRequest()
+	}
+	if err != nil {
 		c.Logger().Error(err)
 		return quick.ServiceError()
 	}
 
-	return c.NoContent(http.StatusOK)
+	return c.JSON(http.StatusOK, balance)
 }
 
 func Items(c echo.Context) error {
@@ -54,7 +60,7 @@ func Items(c echo.Context) error {
 
 	itemMap := make(UserItemsResponse)
 	for _, item := range it {
-		itemMap[item.ID] = item.ItemData
+		itemMap[item.ID] = &item.ItemData
 	}
 
 	return c.JSON(http.StatusOK, itemMap)

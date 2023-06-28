@@ -20,33 +20,54 @@ func runInternal() (
 	db.Orm,
 	sessions.Store,
 ) {
-	// want to replace with ecdsa sig or
-	// at least 32bytes rand gen values.
-
-	fmt.Println("Admin Name?")
-	var aName string
-	fmt.Scan(&aName)
-	fmt.Print("\r\033[1A")
-
-	fmt.Println("                                                                ")
-	fmt.Println("Admin Email?")
-	var aEmail string
-	fmt.Scan(&aEmail)
-	fmt.Print("\r\033[1A")
-
-	fmt.Println("                                                                ")
-	fmt.Println("Admin Password?")
-	var aPassword string
-	fmt.Scan(&aPassword)
-	fmt.Print("\r\033[6A")
-	fmt.Println("                                                                ")
-	fmt.Println("                                                                ")
-	fmt.Println("                                                                ")
-	fmt.Println("                                                                ")
-
 	if err := godotenv.Load(); err != nil {
 		log.Fatal(err)
 	}
+
+	orm, err := db.NewOrm()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("Do you want record admin?")
+	var aCreate string
+	fmt.Scan(&aCreate)
+	fmt.Print("\r\033[1A")
+	if aCreate == "yes" || aCreate == "y" {
+		fmt.Println("Admin Name?")
+		var aName string
+		fmt.Scan(&aName)
+		fmt.Print("\r\033[1A")
+
+		fmt.Println("                                                                ")
+		fmt.Println("Admin Email?")
+		var aEmail string
+		fmt.Scan(&aEmail)
+		fmt.Print("\r\033[1A")
+
+		fmt.Println("                                                                ")
+		fmt.Println("Admin Password?")
+		var aPassword string
+		fmt.Scan(&aPassword)
+		fmt.Print("\r\033[7A")
+		fmt.Println("                                                                ")
+		fmt.Println("                                                                ")
+		fmt.Println("                                                                ")
+		fmt.Println("                                                                ")
+		fmt.Println("                                                                ")
+		fmt.Println("                                                                ")
+		fmt.Println("                                                                ")
+
+		err = orm.User().CreateAdmin(aName, aEmail, aPassword)
+		if err != nil {
+			log.Fatal(err)
+		}
+	} else {
+		fmt.Print("\r\033[1A")
+		fmt.Println("                                                                ")
+		fmt.Println("                                                                ")
+	}
+
 	if utils.IsDev() {
 		log.Println("starting service as development mode")
 	}
@@ -66,16 +87,6 @@ func runInternal() (
 	secret := os.Getenv("SESSION_SECRET")
 	if len(secret) == 0 {
 		log.Fatal("env param SESSION_SECRET is empty")
-	}
-
-	orm, err := db.NewOrm()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	err = orm.User().CreateAdmin(aName, aEmail, aPassword)
-	if err != nil {
-		log.Fatal(err)
 	}
 
 	store := session.NewSessionStroe(secret)
