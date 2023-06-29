@@ -36,19 +36,25 @@ func runInternal() (
 	if aCreate == "yes" || aCreate == "y" {
 		fmt.Println("Admin Name?")
 		var aName string
-		fmt.Scan(&aName)
+		_, err = fmt.Scan(&aName)
 		fmt.Print("\r\033[1A")
+		if err != nil {
+			log.Fatal(err)
+		}
 
 		fmt.Println("                                                                ")
 		fmt.Println("Admin Email?")
 		var aEmail string
-		fmt.Scan(&aEmail)
+		_, err = fmt.Scan(&aEmail)
 		fmt.Print("\r\033[1A")
+		if err != nil {
+			log.Fatal(err)
+		}
 
 		fmt.Println("                                                                ")
 		fmt.Println("Admin Password?")
 		var aPassword string
-		fmt.Scan(&aPassword)
+		_, err = fmt.Scan(&aPassword)
 		fmt.Print("\r\033[7A")
 		fmt.Println("                                                                ")
 		fmt.Println("                                                                ")
@@ -57,6 +63,9 @@ func runInternal() (
 		fmt.Println("                                                                ")
 		fmt.Println("                                                                ")
 		fmt.Println("                                                                ")
+		if err != nil {
+			log.Fatal(err)
+		}
 
 		err = orm.User().CreateAdmin(aName, aEmail, aPassword)
 		if err != nil {
